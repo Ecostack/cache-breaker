@@ -18,8 +18,8 @@ describe('Using a custom callback for creating the replacement', function () {
 
     it('single 1', function () {
 
-        var test     = '<link href="/css/style.css" />';
-        var actual   = index.breakCache(test, 'style.css', config);
+        var test = '<link href="/css/style.css" />';
+        var actual = index.breakCache(test, 'style.css', config);
 
         var expected = '<link href="/css/style.css?rel=2bd52f68d9" />';
 
@@ -29,8 +29,8 @@ describe('Using a custom callback for creating the replacement', function () {
 
         config.position = "filename";
 
-        var test     = '<link href="/css/style.css" />';
-        var actual   = index.breakCache(test, 'style.css', config);
+        var test = '<link href="/css/style.css" />';
+        var actual = index.breakCache(test, 'style.css', config);
 
         var expected = '<link href="/css/style.2bd52f68d9.css" />';
 
@@ -40,8 +40,8 @@ describe('Using a custom callback for creating the replacement', function () {
 
         config.position = "overwrite";
 
-        var test     = '<link href="/css/style.r5432.css" />';
-        var actual   = index.breakCache(test, 'style.*.css', config);
+        var test = '<link href="/css/style.r5432.css" />';
+        var actual = index.breakCache(test, 'style.*.css', config);
 
         var expected = '<link href="/css/style.2bd52f68d9.css" />';
 
@@ -51,11 +51,36 @@ describe('Using a custom callback for creating the replacement', function () {
 
         config.position = "overwrite";
 
-        var test     = '<link href="/css/style.r5432.css" /><link href="/css/style2.r5432.css" />';
-        var actual   = index.breakCache(test, ['style.*.css', 'style2.*.css'], config);
+        var test = '<link href="/css/style.r5432.css" /><link href="/css/style2.r5432.css" />';
+        var actual = index.breakCache(test, ['style.*.css', 'style2.*.css'], config);
 
         var expected = '<link href="/css/style.2bd52f68d9.css" /><link href="/css/style2.2bd52f68d9.css" />';
 
         assert.equal(actual, expected);
     });
+
+    it('dont be greedy', function () {
+
+        delete config.position;
+
+        var test = '<link href="/css/style.cssor" />';
+        var actual = index.breakCache(test, 'style.css', config);
+
+        var expected = '<link href="/css/style.cssor" />';
+
+        assert.equal(actual, expected);
+    })
+
+    it('dont be greedy multiple', function () {
+
+        delete config.position;
+
+        var test = '<link href="/css/style.cssor" /> <link href="/css/style.css" />';
+        var actual = index.breakCache(test, 'style.css', config);
+
+        var expected = '<link href="/css/style.cssor" /> <link href="/css/style.css?rel=2bd52f68d9" />';
+
+        assert.equal(actual, expected);
+    })
+
 });
